@@ -54,7 +54,7 @@ class Element {
     if (this.pos.x > width + 30 || this.pos.x < -30 || this.pos.y < -30) {
       this.crtLife = this.maxLife;
       this.isTouched = false;
-    }else if (this.pos.y >= largestH + this.landPos) {
+    }else if (this.pos.y >= height + this.landPos) {
       this.acc.mult(0);
       this.speed.mult(0);
       //this.isTouched = false;

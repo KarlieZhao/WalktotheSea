@@ -47,7 +47,7 @@ let startCounting = false;
 function mouseClicked() {
   words = [];
   resizeCanvas(canvasW, canvasH);
-  console.log(height);
+  //console.log(height);
   if (crtSentenceIndex == sentences.length - 2) {
     startCounting = true;
   }
