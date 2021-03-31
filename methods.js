@@ -74,26 +74,31 @@ async function loadjson() {
 }
 
 async function getCountryLang() {
-  let ipresponse = await fetch('https://api.ipify.org/?format=json');
-  let response = await ipresponse.json();
-  let ip = response.ip;
-  console.log(ip);
-  let country = await fetch('https://json.geoiplookup.io/' + ip);
-  let res = await country.json();
-  let ctyCode = res.country_code.toLowerCase();
-  let cryName = res.country_name;
-  console.log("Country code: " + ctyCode);
 
-  let langRes = await fetch('https://restcountries.eu/rest/v2/alpha/' + ctyCode);
-  let resp = await langRes.json()
-  let lang = resp.languages[0].iso639_1;
+    const ipresponse = await fetch('https://api.ipify.org/?format=json');
+    let response = await ipresponse.json();
+    let ip = response.ip;
+    console.log("IP:"+ip);
 
-  console.log("Language code: " + lang);
-  for (let i = 0; i < wastesListPairs.length; i++) {
-    if (lang.toLowerCase() == wastesListPairs[i].symbol) {
-      wordIncountryLanguage = wastesListPairs[i].text.split(re);
-      break;
-    }
-  }
+  //  try {
+      const country = await fetch('https://json.geoiplookup.io/' + ip);
+      let res = await country.json();
+      let ctyCode = res.country_code.toLowerCase();
+      let cryName = res.country_name;
+      console.log("Country code: " + ctyCode);
+      // } catch(err) {
+      //     console.log('Error -> getting geolocation info: ', err)
+      // }
+        const langRes = await fetch('https://restcountries.eu/rest/v2/alpha/' + ctyCode);
+        let resp = await langRes.json();
+        let lang = resp.languages[0].iso639_1;
+        console.log("Language code: " + lang);
+
+        for (let i = 0; i < wastesListPairs.length; i++) {
+          if (lang.toLowerCase() == wastesListPairs[i].symbol) {
+            wordIncountryLanguage = wastesListPairs[i].text.split(re);
+            break;
+          }
+        }
   console.log(wordIncountryLanguage);
 }
