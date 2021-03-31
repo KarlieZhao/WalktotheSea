@@ -40,9 +40,6 @@ function generateNewText() {
     }
   }
   crtSentenceIndex++;
-  if(text_ypos>=canvasH-400){
-    canvasH+=200;
-  }
 }
 
 //-------------------------------------------------
@@ -74,31 +71,41 @@ async function loadjson() {
 }
 
 async function getCountryLang() {
+try {
+  const ipresponse = await fetch('https://api.ipify.org/?format=json');
+  let response = await ipresponse.json();
+  let ip = response.ip;
+  console.log("IP:" + ip);
 
-    const ipresponse = await fetch('https://api.ipify.org/?format=json');
-    let response = await ipresponse.json();
-    let ip = response.ip;
-    console.log("IP:"+ip);
+  try {
+    const country = await fetch('https://json.geoiplookup.io/' + ip);
+    let res = await country.json();
+    let ctyCode = res.country_code.toLowerCase();
+    let cryName = res.country_name;
+    console.log("Country code: " + ctyCode);
 
-  //  try {
-      const country = await fetch('https://json.geoiplookup.io/' + ip);
-      let res = await country.json();
-      let ctyCode = res.country_code.toLowerCase();
-      let cryName = res.country_name;
-      console.log("Country code: " + ctyCode);
-      // } catch(err) {
-      //     console.log('Error -> getting geolocation info: ', err)
-      // }
-        const langRes = await fetch('https://restcountries.eu/rest/v2/alpha/' + ctyCode);
-        let resp = await langRes.json();
-        let lang = resp.languages[0].iso639_1;
-        console.log("Language code: " + lang);
-
-        for (let i = 0; i < wastesListPairs.length; i++) {
-          if (lang.toLowerCase() == wastesListPairs[i].symbol) {
-            wordIncountryLanguage = wastesListPairs[i].text.split(re);
-            break;
-          }
+    try {
+      const langRes = await fetch('https://restcountries.eu/rest/v2/alpha/' + ctyCode);
+      let resp = await langRes.json();
+      let lang = resp.languages[0].iso639_1;
+      console.log("Language code: " + lang);
+      for (let i = 0; i < wastesListPairs.length; i++) {
+        if (lang.toLowerCase() == wastesListPairs[i].symbol) {
+          wordIncountryLanguage = wastesListPairs[i].text.split(re);
+          break;
         }
-  console.log(wordIncountryLanguage);
+      }
+    } catch (err) {
+      console.log('Error -> getting geolocation info: ', err);
+      wordIncountryLanguage=wordInUserLanguage;
+    }
+  } catch (err) {
+    console.log('Error -> getting geolocation info: ', err);
+    wordIncountryLanguage=wordInUserLanguage;
+  }
+}catch (err) {
+    console.log('Error -> getting geolocation info: ', err);
+    wordIncountryLanguage=wordInUserLanguage;
+  }
+
 }

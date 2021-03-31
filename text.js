@@ -24,7 +24,7 @@ sentences[17]="At the last time, you were terribly choked by the [salty water] w
 for(var i=0;i<7;i++){
   sentences[18+i]=sentences[2+i];
 }
-sentences[25]="On those more recent nights, you can only lie in bed, order a rich-flavored [snack] out of boredom.";
+sentences[25]="On those more recent nights, you can only be lying in bed, order a rich-flavored [snack] out of boredom.";
 sentences[26]="Snacks, [thousands of] snacks that should have been on the plate, are served in plastic boxes right now.";
 sentences[27]="Thousands of mouths that should have been chewing in the restaurants, continue chewing at home. Thousands of faces that should have been [exposed] are covered by masks.";
 sentences[28]="Exposing to the sun by [the beach], you feel more comfortable than ever had.";

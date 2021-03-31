@@ -17,8 +17,7 @@ let wordIncountryLanguage = [];
 let localizedWords = [];
 var wastesListPairs = [];
 let canvasW;
-let largestH = 3900;
-let canvasH = 700;
+let canvasH = 3700;
 
 let enFont = "New Tegomin";
 let secondFont = "New Tegomin";
@@ -46,8 +45,7 @@ let startCounting = false;
 
 function mouseClicked() {
   words = [];
-  resizeCanvas(canvasW, canvasH);
-  //console.log(height);
+  //resizeCanvas(canvasW, canvasH);
   if (crtSentenceIndex == sentences.length - 2) {
     startCounting = true;
   }

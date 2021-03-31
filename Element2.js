@@ -9,7 +9,7 @@ class Element {
     this.weight = map(this.word.length, 1, 15, 1, 5);
     this.weight=constrain(this.weight,1,100);
     this.landPos = random(-50, -5);
-
+this.crtAngle=0;
     //-----------------------------------
     this.isTouched = false;
     this.switch = false;
@@ -100,9 +100,14 @@ class Element {
     } else {
       this.update();
     }
+    push()
+    translate(this.pos.x,this.pos.y);
+     this.crtAngle=lerp(this.crtAngle,this.speed.heading()/10,0.1);
+    rotate(this.crtAngle);
     fill(255, this.c);
     noStroke();
-    text(this.word, this.pos.x, this.pos.y);
+    text(this.word, 0,0);
+    pop();
   }
 
   mouseInsideText() {
