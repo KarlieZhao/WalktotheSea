@@ -1,69 +1,43 @@
+let maxSpeed = 0.6;
+
 class Element {
   constructor(w, p, clickable) {
     this.word = w;
     this.pos = p;
     this.clickable = clickable;
 
-    //weight and gravity system
-    if (this.word.length >= 7) {
-      this.weight = 10;
-      this.landPos = random(-40, 0);
-    } else if (this.word.length >= 4) {
-      this.weight = 5;
-      this.landPos = random(-5, 40);
-    } else {
-      this.weight = 1;
-      this.landPos = random(-10, 20);
-    }
+    this.weight = map(this.word.length, 1, 15, 1, 5);
+    this.weight=constrain(this.weight,1,100);
+    this.landPos = random(-50, -5);
+
     //-----------------------------------
     this.isTouched = false;
     this.switch = false;
-
     this.speed = createVector(0, 0);
-    this.acc = createVector(0, 0.07);
+    this.acc = createVector(0, this.weight / 5);
     this.c = 250; //transparency
-
-    this.maxSpeed = 1;
     this.crtLife = 0;
 
     if (!RiTa.isPunct(this.word)) {
-      this.maxLife = random(1800, 2000);
+      this.maxLife = random(4000, 7000);
     } else {
-      this.maxLife = random(500, 700);
+      this.maxLife = random(2000, 3500);
     }
   }
   //-----------------------------------
   applyForce(force) {
     this.acc.add(force);
-    this.speed.add(this.acc);
+    this.speed.add(this.acc.div(this.weight));
+    this.speed.y += this.weight/100;
+    this.speed.limit(maxSpeed);
     this.pos.add(this.speed);
-  }
-
-  wrap() {
-    if (this.pos.x > width+30 || this.pos.x < -30 || this.pos.y<-30) {
-      this.crtLife = this.maxLife;
-      this.isTouched = false;
-    }
-    if (this.pos.y >= canvasH) {
-      this.acc.mult(0);
-      this.speed.mult(0);
-      this.isTouched = false;
-    }
   }
 
   newWord() {
     if (!RiTa.isPunct(this.word)) {
       this.word = random(localizedWords);
-
     } else {
       this.word = "。";
-    }
-    if (this.weight == 1) {
-      this.acc = createVector(0, 0.2);
-    } else if (this.weight == 5) {
-      this.acc = createVector(0, 0.6);
-    } else {
-      this.acc = createVector(0, 1.2);
     }
   }
 
@@ -77,32 +51,28 @@ class Element {
   }
 
   move() {
-    if (this.pos.y >= height + this.landPos) {
+    if (this.pos.x > width + 30 || this.pos.x < -30 || this.pos.y < -30) {
+      this.crtLife = this.maxLife;
+      this.isTouched = false;
+    }else if (this.pos.y >= largestH + this.landPos) {
       this.acc.mult(0);
       this.speed.mult(0);
-      this.pos.add(this.speed);
-      this.isTouched = false;
+      //this.isTouched = false;
+      this.maxLife++;
     } else if (this.isTouched && this.c >= 50) {
       this.follow(flowfield);
     }
   }
 
   update() {
-    this.wrap();
     if (this.crtLife >= this.maxLife) {
       this.c -= 2;
     } else {
       this.crtLife++;
     }
-
-    this.speed.limit(this.maxSpeed);
-
     if (this.switch) {
       this.move();
-    }else if (this.isTouched) {
-      if (!RiTa.isPunct(this.word)) {
-        this.maxLife = random(3000, 5000);
-      }
+    } else if (this.isTouched) {
       if (this.c == 50) {
         this.switch = true;
         this.newWord();
@@ -116,7 +86,6 @@ class Element {
       }
       //isTouched = false;
     } else {
-
       if (this.crtLife >= this.maxLife * 0.8) {
         this.isTouched = true;
       }
@@ -136,13 +105,10 @@ class Element {
     text(this.word, this.pos.x, this.pos.y);
   }
 
-
   mouseInsideText() {
     let top = this.pos.y - textAscent();
     let bottom = this.pos.y + textDescent();
-
     return (mouseX > this.pos.x && mouseX < this.pos.x + textWidth(this.word) &&
       mouseY > top && mouseY < bottom);
   }
-
 }

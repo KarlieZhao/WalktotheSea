@@ -12,58 +12,71 @@ let lowest = [];
 
 let newsTxt = "";
 
-let windowIsResized = false;
-
 let wordInUserLanguage = [];
 let wordIncountryLanguage = [];
 let localizedWords = [];
 var wastesListPairs = [];
-let canvasH = 3000;
-  loadjson();
+let canvasW;
+let largestH=3900;
+let canvasH = 700;
+
+let enFont = "New Tegomin";
+let secondFont = "New Tegomin";
+
+loadjson();
 getCountryLang();
 
 
 function setup() {
-  createCanvas(windowWidth, canvasH);
-  textSize(18);
-  textFont("Courier New");
-  background("#152038");
+  canvasW = windowWidth;
+  createCanvas(canvasW, canvasH);
+  textSize(19);
+  textFont("New Tegomin");
+  // textFont("Amiri");
+  background(0, 0);
   loadSentences();
   generateNewText();
 
-    for (let i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     elements[i].render();
   }
 }
-
-function windowResized() {
-  resizeCanvas(windowWidth, canvasH);
-  windowIsResized = true;
-}
+let count = 0;
+let startCounting = false;
 
 function mouseClicked() {
   words = [];
-  for (let i = 0; i < elements.length; i++) {
-    if (elements[i].mouseInsideText()) {
+  resizeCanvas(canvasW, canvasH);
+console.log(height);
+  if (crtSentenceIndex == sentences.length - 2) {
+    startCounting = true;
+  }
+  if (crtSentenceIndex < sentences.length) {
+    for (let i = 0; i < elements.length; i++) {
+      if (elements[i].mouseInsideText() && elements[i].clickable) {
+        elements.forEach((item) => {
+          item.clickable = false;
+        });
 
-      for (let j = i - 5; j < elements.length-1; j++) {
-        elements[j].clickable = false;
-        elements[i].isTouched = true;
+        elements[i].isTouched = false;
+        generateNewText();
+        break;
       }
-      generateNewText();
-      break;
     }
   }
 }
 
+
 function draw() {
   // if(frameCount<=10){
-    localizedWords = wordInUserLanguage.concat(wordIncountryLanguage);
+  localizedWords = wordInUserLanguage.concat(wordIncountryLanguage);
   // }
-  background("#152038");
-
-  windowIsResized = false;
+  clear();
   createFlowField();
+  if (startCounting) {
+    count++;
+  }
+  if (count == 300) generateNewText();
 
   for (let i = 0; i < elements.length; i++) {
     elements[i].render();

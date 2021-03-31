@@ -1,56 +1,52 @@
 let crtSentenceIndex = 0;
 
 function generateNewText() {
-  let t = RiTa.tokenize(sentences[crtSentenceIndex % 16]);
-let isClickable =false;
-
-  let lineHeight = 1.2 * (textAscent() + textDescent());
-  text_ypos += lineHeight / 2;
+  let t = RiTa.tokenize(sentences[crtSentenceIndex]);
+  let isClickable = false;
+  let lineHeight;
+  if (crtSentenceIndex > sentences.length - 4) {
+    lineHeight = 1.7 * (textAscent() + textDescent());
+  } else {
+    lineHeight = 1.2 * (textAscent() + textDescent());
+  }
+  text_ypos += lineHeight;
   text_xpos = width / 3.5;
 
   for (let i = 0; i < t.length; i++) {
 
     if (t[i].charAt(t[i].length - 1) == '[') {
       t[i] = t[i].substr(0, str.length - 1); //get rid of the '['
-    isClickable=true;
+      isClickable = true;
 
     } else if (t[i].charAt(t[i].length - 1) == ']') {
       t[i] = t[i].substr(0, str.length - 1); //get rid of the ']'
-        isClickable=false;
+      isClickable = false;
     }
 
-    if (text_xpos >= width - width / 3.5) {
+    if (text_xpos >= width - width / 3.5 && !RiTa.isPunct(t[i])) {
       text_ypos += lineHeight;
       text_xpos = width / 3.5;
     }
 
     let pos = createVector(text_xpos, text_ypos);
 
-      elements.push(new Element(t[i], pos, isClickable));
+    elements.push(new Element(t[i], pos, isClickable));
 
-      text_xpos += RiTa.isPunct(t[i + 1]) ? textWidth(t[i]) : textWidth(t[i] + " ");
+    text_xpos += RiTa.isPunct(t[i + 1]) ? textWidth(t[i]) : textWidth(t[i] + " ");
 
-    if (t[i] == ".") {
+    if (t[i] == "." || t[i] == "?") {
       text_xpos = width / 3.5;
       text_ypos += lineHeight;
     }
   }
-
-
   crtSentenceIndex++;
+  if(text_ypos>=canvasH-400){
+    canvasH+=200;
+  }
 }
 
 //-------------------------------------------------
-
-// let response = await fetch('coffee.jpg');
-//   let myBlob = await response.blob();
-//
-//   let objectURL = URL.createObjectURL(myBlob);
-//   let image = document.createElement('img');
-//   image.src = objectURL;
-//   document.body.appendChild(image);
-// }
-
+let re = /[\s,]/;
 
 async function loadjson() {
   let f = await fetch('waste.json');
@@ -66,12 +62,12 @@ async function loadjson() {
 
   for (let i = 0; i < wastesListPairs.length; i++) {
     if (userLanguage.toLowerCase() == wastesListPairs[i].symbol) {
-      wordInUserLanguage = wastesListPairs[i].text.split(",");
+      wordInUserLanguage = wastesListPairs[i].text.split(re);
       break;
     } else {
       if (i == wastesListPairs - 1) {
         console.log("Fail to identify browser language, set language to English.");
-        wordInUserLanguage = wastesListPairs[0].text.split(","); //default: English;
+        wordInUserLanguage = wastesListPairs[0].text.split(re); //default: English;
       }
     }
   }
@@ -79,22 +75,23 @@ async function loadjson() {
 
 async function getCountryLang() {
   let ipresponse = await fetch('https://api.ipify.org/?format=json');
-  let response =await ipresponse.json();
+  let response = await ipresponse.json();
   let ip = response.ip;
   console.log(ip);
   let country = await fetch('https://json.geoiplookup.io/' + ip);
   let res = await country.json();
   let ctyCode = res.country_code.toLowerCase();
+  let cryName = res.country_name;
   console.log("Country code: " + ctyCode);
 
   let langRes = await fetch('https://restcountries.eu/rest/v2/alpha/' + ctyCode);
-  let resp=await langRes.json()
+  let resp = await langRes.json()
   let lang = resp.languages[0].iso639_1;
 
   console.log("Language code: " + lang);
   for (let i = 0; i < wastesListPairs.length; i++) {
     if (lang.toLowerCase() == wastesListPairs[i].symbol) {
-      wordIncountryLanguage = wastesListPairs[i].text.split(",");
+      wordIncountryLanguage = wastesListPairs[i].text.split(re);
       break;
     }
   }
