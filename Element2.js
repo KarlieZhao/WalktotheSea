@@ -1,15 +1,16 @@
 let maxSpeed = 1;
-let bubbles = ["。", "o", "。"];
-
+let l = 0;
 class Element {
   constructor(w, p, clickable, poem, conjunctWord) {
+    l++;
     this.word = w;
     this.pos = p;
     this.clickable = clickable;
     this.isPoem = poem;
     this.appeared = false;
-    this.landPos = random(-50, -5);
+    this.landPos = -l / 10 - 5;
     this.crtAngle = 0;
+    this.sz = 19;
     //-----------------------------------
     this.weight = map(this.word.length, 1, 15, 1, 5);
     this.weight = constrain(this.weight, 1, 5);
@@ -50,8 +51,10 @@ class Element {
   newWord() {
     if (!RiTa.isPunct(this.word)) {
       this.word = random(localizedWords);
+      this.sz = random(13, 23);
     } else {
-      this.word = random(bubbles);
+      this.word = "。";
+      this.sz = random(19, 40);
     }
   }
 
@@ -68,9 +71,11 @@ class Element {
       this.crtLife = this.maxLife;
       this.isTouched = false;
     } else if (this.pos.y >= height + this.landPos) {
-      this.acc.mult(0);
-      this.speed.mult(0);
       this.maxLife++;
+      this.follow(flowfield);
+      this.acc.limit(0.05);
+      this.speed.limit(0.05);
+      this.speed.y = 0;
     } else if (this.isTouched && this.c >= 50) {
       this.follow(flowfield);
     }
@@ -110,8 +115,8 @@ class Element {
     }
 
     if (this.clickable) {
-      stroke(this.lineTrans,255);
-      this.lineTrans += (this.lineTrans<255)? 3:0;
+      stroke(this.lineTrans, 255);
+      this.lineTrans += (this.lineTrans < 255) ? 3 : 0;
       strokeWeight(1);
       line(this.pos.x, this.pos.y + 1.2 * textDescent(), this.pos.x + textWidth(this.word + " "), this.pos.y + 1.2 * textDescent());
       fill(255, this.c);
@@ -127,6 +132,7 @@ class Element {
     this.crtAngle = lerp(this.crtAngle, this.speed.heading() / 10, 0.1);
     rotate(this.crtAngle);
     noStroke();
+    textSize(this.sz);
     text(this.word, 0, 0);
     pop();
   }

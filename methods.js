@@ -1,9 +1,6 @@
 let crtSentenceIndex = 0;
 let leftMargin;
 
-let reloadBtnPos, endBtnPos;
-let reloadBtnL, endBtnL;
-
 function generateNewText() {
 
   let t = RiTa.tokenize(sentences[crtSentenceIndex]);
@@ -41,7 +38,7 @@ function generateNewText() {
       isConjunctWord = false;
     }
 
-    if (text_xpos >= width - 1.1 * leftMargin && !RiTa.isPunct(t[i])) {
+    if (text_xpos >= width - 1.1 * leftMargin && !RiTa.isPunct(t[i]) && !RiTa.isPunct(t[i+1])) {
       text_ypos += lineHeight;
       text_xpos = leftMargin;
     }
@@ -50,19 +47,8 @@ function generateNewText() {
     if (t[i] != "") {
       elements.push(new Element(t[i], pos, isClickable, isPoem, isConjunctWord));
     }
-
-    if (crtSentenceIndex == sentences.length - 3) {
-      if (t[i] == "and") {
-        reloadBtnPos = createVector(text_xpos, text_ypos);
-        reloadBtnL = textWidth(" and everything ");
-      } else if (t[i] == "fading") {
-        endBtnPos = createVector(text_xpos, text_ypos);
-        endBtnL = textWidth("fading away ");
-      }
-    }
-
     text_xpos += RiTa.isPunct(t[i + 1]) ? textWidth(t[i]) : textWidth(t[i] + " ");
-    if (t[i] == "." || t[i] == "?") {
+    if (t[i] == ".") {
       text_xpos = leftMargin;
       text_ypos += lineHeight;
     }
@@ -76,7 +62,7 @@ let re = /[\s,]/;
 async function loadjson() {
   let f = await fetch('waste.json');
   let response = await f.json();
-  
+
   for (let i = 0; i < 45; i++) {
     wastesListPairs[i] = {
       "symbol": response[i].symbol,
@@ -125,5 +111,7 @@ async function getCountryLang() {
   } catch (err) {
     console.log('Error -> ', err);
     wordIncountryLanguage = wordInUserLanguage;
+    localizedWords = wordInUserLanguage;
+
   }
 }

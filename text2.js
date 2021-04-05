@@ -2,7 +2,7 @@ let sentences=[];
 let poem=[];
 function loadSentences(){
   sentences[0]="It’s been a while. Since the last time you’ve been to [the sea].";
-  sentences[1]="All of the memories come back while thinking about the word “(sea)”: the wet breeze {calmly} blowing on the beach, the [smell] of seaweed, {the wearied} {creatures resting} underneath the boiling hot sand grains, and everything.";
+  sentences[1]="All of the memories come back while thinking about the word “(sea)”: the wet breeze {calmly} blowing on the beach, the [smell] of seaweed, {the wearied creatures resting} underneath the boiling hot sand grains, and everything.";
   sentences[2]="You can (smell) nothing for now, breathing {beneath the} [mask]. Nothing from your beautiful {blue sea}.";
   sentences[3]="(Masks) have [ruined everything].";
   sentences[4]="The [pandemic] has (ruined everything).";

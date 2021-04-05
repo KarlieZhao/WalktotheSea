@@ -7,7 +7,7 @@ let wordInUserLanguage = [];
 let wordIncountryLanguage = [];
 let localizedWords = [];
 var wastesListPairs = [];
-let canvasW = 1920;
+let canvasW;
 let canvasH = 3200;
 
 let enFont;
@@ -21,6 +21,7 @@ function preload() {
 
 function setup() {
   frameRate(30);
+  canvasW = windowWidth;
   createCanvas(canvasW, canvasH);
   leftMargin = width / 4;
   textFont(enFont);
@@ -54,6 +55,10 @@ function mouseClicked() {
   }
 }
 
+function scrollWindow() {
+  window.scrollTo(0, 0);
+}
+
 function restart() {
   crtSentenceIndex = 0;
   text_xpos = leftMargin;
@@ -61,6 +66,7 @@ function restart() {
 
   let newArr = elements.filter(item => (item.isTouched == true && item.isPoem == false));
   elements = newArr;
+  scrollWindow();
   generateNewText();
 }
 

@@ -3,9 +3,10 @@ html, body {
   padding: 0;
   background:#030b1a;
   height: 3200px;
-  background: linear-gradient(#475266, #030b1a);
+  background: linear-gradient(#475266, #01040a);
   /* 07132b */
   font-family:"New Tegomin";
+  scroll-behavior: smooth;
 }
 canvas {
   display: block;
