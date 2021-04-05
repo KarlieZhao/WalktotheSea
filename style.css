@@ -1,9 +1,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  /* background:#152038; */
-  height: 3700px;
-  background: linear-gradient(#747e8f, #07132b);
+  background:#030b1a;
+  height: 3200px;
+  background: linear-gradient(#475266, #030b1a);
+  /* 07132b */
+  font-family:"New Tegomin";
 }
 canvas {
   display: block;

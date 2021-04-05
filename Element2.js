@@ -1,34 +1,48 @@
-let maxSpeed = 0.6;
+let maxSpeed = 1;
+let bubbles = ["。", "o", "。"];
 
 class Element {
-  constructor(w, p, clickable) {
+  constructor(w, p, clickable, poem, conjunctWord) {
     this.word = w;
     this.pos = p;
     this.clickable = clickable;
-
-    this.weight = map(this.word.length, 1, 15, 1, 5);
-    this.weight=constrain(this.weight,1,100);
+    this.isPoem = poem;
+    this.appeared = false;
     this.landPos = random(-50, -5);
-this.crtAngle=0;
+    this.crtAngle = 0;
     //-----------------------------------
+    this.weight = map(this.word.length, 1, 15, 1, 5);
+    this.weight = constrain(this.weight, 1, 5);
     this.isTouched = false;
     this.switch = false;
     this.speed = createVector(0, 0);
     this.acc = createVector(0, this.weight / 5);
-    this.c = 250; //transparency
-    this.crtLife = 0;
 
-    if (!RiTa.isPunct(this.word)) {
-      this.maxLife = random(4000, 7000);
+    //transparency
+    if (conjunctWord) {
+      this.c = 40;
+      this.solidSpeed = 8;
     } else {
-      this.maxLife = random(2000, 3500);
+      this.c = 0;
+      this.solidSpeed = random(2, 5);
     }
+    this.lineTrans = 70;
+
+    this.crtLife = 0;
+    this.maxLife = RiTa.isPunct(this.word) ? random(200, 600) : random(2500, 3500);
   }
+
   //-----------------------------------
   applyForce(force) {
     this.acc.add(force);
-    this.speed.add(this.acc.div(this.weight));
-    this.speed.y += this.weight/100;
+    if (RiTa.isPunct(this.word) || this.word == "o") {
+      this.speed.y -= 1 / 10;
+
+    } else {
+      this.speed.y += this.weight / random(100, 300);
+      this.speed.add(this.acc.div(this.weight));
+
+    }
     this.speed.limit(maxSpeed);
     this.pos.add(this.speed);
   }
@@ -37,14 +51,13 @@ this.crtAngle=0;
     if (!RiTa.isPunct(this.word)) {
       this.word = random(localizedWords);
     } else {
-      this.word = "。";
+      this.word = random(bubbles);
     }
   }
 
   follow(vector) {
     let x = floor(this.pos.x / scl);
     let y = floor(this.pos.y / scl);
-
     var index = x + y * cols;
     var force = vector[index];
     this.applyForce(force);
@@ -54,10 +67,9 @@ this.crtAngle=0;
     if (this.pos.x > width + 30 || this.pos.x < -30 || this.pos.y < -30) {
       this.crtLife = this.maxLife;
       this.isTouched = false;
-    }else if (this.pos.y >= height + this.landPos) {
+    } else if (this.pos.y >= height + this.landPos) {
       this.acc.mult(0);
       this.speed.mult(0);
-      //this.isTouched = false;
       this.maxLife++;
     } else if (this.isTouched && this.c >= 50) {
       this.follow(flowfield);
@@ -70,43 +82,52 @@ this.crtAngle=0;
     } else {
       this.crtLife++;
     }
+
     if (this.switch) {
       this.move();
-    } else if (this.isTouched) {
-      if (this.c == 50) {
-        this.switch = true;
-        this.newWord();
-      }
-      if (!this.switch) {
-        if (this.c > 50) {
-          this.c -= 10;
-        }
-      } else if (this.c < 180) {
+      if (this.c < 60) {
         this.c += 10;
       }
-      //isTouched = false;
+    } else if (this.isTouched) {
+      if (this.c <= 50) {
+        this.newWord();
+        this.switch = true;
+      } else {
+        this.c -= 10;
+      }
     } else {
-      if (this.crtLife >= this.maxLife * 0.8) {
+      if (this.crtLife >= this.maxLife * 0.65) {
         this.isTouched = true;
       }
     }
   }
 
   render() {
+    if (!this.appeared && this.c >= 250) {
+      this.appeared = true;
+    } else if (!this.appeared) {
+      this.c += this.solidSpeed;
+    }
+
     if (this.clickable) {
-      stroke(255, this.c);
+      stroke(this.lineTrans,255);
+      this.lineTrans += (this.lineTrans<255)? 3:0;
       strokeWeight(1);
       line(this.pos.x, this.pos.y + 1.2 * textDescent(), this.pos.x + textWidth(this.word + " "), this.pos.y + 1.2 * textDescent());
+      fill(255, this.c);
     } else {
-      this.update();
+      fill(220, this.c);
+      if (!this.isPoem) {
+        this.update();
+      }
     }
-    push()
-    translate(this.pos.x,this.pos.y);
-     this.crtAngle=lerp(this.crtAngle,this.speed.heading()/10,0.1);
+
+    push();
+    translate(this.pos.x, this.pos.y);
+    this.crtAngle = lerp(this.crtAngle, this.speed.heading() / 10, 0.1);
     rotate(this.crtAngle);
-    fill(255, this.c);
     noStroke();
-    text(this.word, 0,0);
+    text(this.word, 0, 0);
     pop();
   }
 
