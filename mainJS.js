@@ -10,13 +10,13 @@ var wastesListPairs = [];
 let canvasW = 1920;
 let canvasH = 3200;
 
-let enFont;
+let enFont="New Tegomin";
 let secondFont = "New Tegomin";
 
 function preload() {
   loadjson();
   getCountryLang();
-  enFont = loadFont("NewTegomin-Regular.ttf");
+ // enFont = loadFont("NewTegomin-Regular.ttf");
 }
 
 function setup() {
