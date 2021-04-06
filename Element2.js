@@ -27,7 +27,7 @@ class Element {
       this.c = 0;
       this.solidSpeed = random(2, 5);
     }
-    this.lineTrans = 70;
+    this.lineTrans = 100;
 
     this.crtLife = 0;
     this.maxLife = RiTa.isPunct(this.word) ? random(200, 600) : random(2500, 3500);
@@ -143,4 +143,5 @@ class Element {
     return (mouseX > this.pos.x && mouseX < this.pos.x + textWidth(this.word) &&
       mouseY > top && mouseY < bottom);
   }
+
 }

@@ -1,14 +1,14 @@
 let crtSentenceIndex = 0;
 let leftMargin;
+let lineHeight;
+let endingMark = /[.?…]/;
 
 function generateNewText() {
-
+  lastSentence = 0;
   let t = RiTa.tokenize(sentences[crtSentenceIndex]);
   let isClickable = false;
   let isPoem = false;
   let isConjunctWord = false;
-
-  let lineHeight = 1.7 * (textAscent() + textDescent());
 
   text_ypos += lineHeight;
   text_xpos = leftMargin;
@@ -38,7 +38,7 @@ function generateNewText() {
       isConjunctWord = false;
     }
 
-    if (text_xpos >= width - 1.1 * leftMargin && !RiTa.isPunct(t[i]) && !RiTa.isPunct(t[i+1])) {
+    if (text_xpos >= width - 1.1 * leftMargin && !RiTa.isPunct(t[i]) && !RiTa.isPunct(t[i + 1])) {
       text_ypos += lineHeight;
       text_xpos = leftMargin;
     }
@@ -46,24 +46,27 @@ function generateNewText() {
     let pos = createVector(text_xpos, text_ypos);
     if (t[i] != "") {
       elements.push(new Element(t[i], pos, isClickable, isPoem, isConjunctWord));
+      lastSentence++;
     }
     text_xpos += RiTa.isPunct(t[i + 1]) ? textWidth(t[i]) : textWidth(t[i] + " ");
-    if (t[i] == ".") {
+
+    if (t[i].match(endingMark)) {
       text_xpos = leftMargin;
       text_ypos += lineHeight;
     }
+  }
+  if (crtSentenceIndex == sentences.length - 2) {
+    lastSentence = 0;
   }
   crtSentenceIndex++;
 }
 
 //-------------------------------------------------
-let re = /[\s,]/;
-
 async function loadjson() {
   let f = await fetch('waste.json');
   let response = await f.json();
 
-  for (let i = 0; i < 45; i++) {
+  for (let i = 0; i < 18; i++) {
     wastesListPairs[i] = {
       "symbol": response[i].symbol,
       "text": response[i].text
@@ -74,12 +77,16 @@ async function loadjson() {
 
   for (let i = 0; i < wastesListPairs.length; i++) {
     if (userLanguage.toLowerCase() == wastesListPairs[i].symbol) {
-      wordInUserLanguage = wastesListPairs[i].text.split(re);
+      wordInUserLanguage = wastesListPairs[i].text.split(",");
+      if(userLanguage.toLowerCase() =="th" || userLanguage.toLowerCase() =="ru" ||userLanguage.toLowerCase() == "vi"
+    ||userLanguage.toLowerCase() =="ko"){
+        firstFont="Courier New";
+      }
       break;
     } else {
       if (i == wastesListPairs - 1) {
         console.log("Fail to identify browser language, set language to English.");
-        wordInUserLanguage = wastesListPairs[0].text.split(re); //default: English;
+        wordInUserLanguage = wastesListPairs[0].text.split(","); //default: English;
       }
     }
   }
@@ -103,11 +110,12 @@ async function getCountryLang() {
     console.log("Language code: " + lang);
     for (let i = 0; i < wastesListPairs.length; i++) {
       if (lang.toLowerCase() == wastesListPairs[i].symbol) {
-        wordIncountryLanguage = wastesListPairs[i].text.split(re);
+        wordIncountryLanguage = wastesListPairs[i].text.split(",");
         break;
       }
     }
     localizedWords = wordInUserLanguage.concat(wordIncountryLanguage);
+    console.log(localizedWords);
   } catch (err) {
     console.log('Error -> ', err);
     wordIncountryLanguage = wordInUserLanguage;
