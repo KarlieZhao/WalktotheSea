@@ -23,7 +23,7 @@ let startSound = false;
 function preload() {
   loadjson();
   getCountryLang();
-  waveSound = loadSound('wave.mp3');
+  //waveSound = loadSound('wave.mp3');
 }
 
 function setup() {
@@ -37,7 +37,7 @@ function setup() {
   textSize(19);
   background(0, 0);
 
-  waveSound.amp(0.4);
+  //waveSound.amp(0.4);
   lineHeight = 1.7 * (textAscent() + textDescent());
   loadHeading("Listen to the sound of the sea");
   loadSentences();
@@ -54,19 +54,19 @@ function mouseClicked() {
   words = [];
   if (!startSound) {
     startSound = true;
-    waveSound.loop();
+  //  waveSound.loop();
     loadHeading("Stop listening");
   }
-  if (headLine.mouseInsideText()) {
-    if (!waveSound.isPlaying()) {
-      startSound = true;
-      waveSound.loop();
-      loadHeading("Stop listening");
-    } else {
-      waveSound.pause();
-      loadHeading("Listen to the sound of the sea");
-    }
-  }
+  // if (headLine.mouseInsideText()) {
+  //   if (!waveSound.isPlaying()) {
+  //     startSound = true;
+  //     waveSound.loop();
+  //     loadHeading("Stop listening");
+  //   } else {
+  //     waveSound.pause();
+  //     loadHeading("Listen to the sound of the sea");
+  //   }
+  // }
 
   if (crtSentenceIndex < sentences.length - 1) {
     for (let i = 0; i < elements.length; i++) {
