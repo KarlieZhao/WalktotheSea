@@ -1,11 +1,11 @@
 let crtSentenceIndex = 0;
 let leftMargin;
 let lineHeight;
-let endingMark = /[.?…]/;
+let endingMark = /[.?]/;
 
-function generateNewText() {
+function generateNewText(text) {
   lastSentence = 0;
-  let t = RiTa.tokenize(sentences[crtSentenceIndex]);
+  let t = RiTa.tokenize(text);
   let isClickable = false;
   let isPoem = false;
   let isConjunctWord = false;
@@ -27,6 +27,7 @@ function generateNewText() {
       isPoem = true;
 
     } else if (t[i].charAt(t[i].length - 1) == '}') {
+
       t[i] = t[i].substr(0, str.length - 1);
       isPoem = false;
     } else if (t[i].charAt(t[i].length - 1) == '(') {
@@ -48,6 +49,7 @@ function generateNewText() {
       elements.push(new Element(t[i], pos, isClickable, isPoem, isConjunctWord));
       lastSentence++;
     }
+
     text_xpos += RiTa.isPunct(t[i + 1]) ? textWidth(t[i]) : textWidth(t[i] + " ");
 
     if (t[i].match(endingMark)) {
@@ -58,10 +60,12 @@ function generateNewText() {
   if (crtSentenceIndex == sentences.length - 2) {
     lastSentence = 0;
   }
-  crtSentenceIndex++;
 }
 
 //-------------------------------------------------
+var userLanguage;
+var sencondLanguage;
+
 async function loadjson() {
   let f = await fetch('waste.json');
   let response = await f.json();
@@ -72,20 +76,18 @@ async function loadjson() {
       "text": response[i].text
     };
   }
-  var userLanguage = getFirstBrowserLanguage();
+  userLanguage = getFirstBrowserLanguage();
   console.log("Browser Language: " + userLanguage);
 
   for (let i = 0; i < wastesListPairs.length; i++) {
     if (userLanguage.toLowerCase() == wastesListPairs[i].symbol) {
       wordInUserLanguage = wastesListPairs[i].text.split(",");
-      if(userLanguage.toLowerCase() =="th" || userLanguage.toLowerCase() =="ru" ||userLanguage.toLowerCase() == "vi"
-    ||userLanguage.toLowerCase() =="ko"){
-        firstFont="Courier New";
-      }
+
       break;
     } else {
       if (i == wastesListPairs - 1) {
         console.log("Fail to identify browser language, set language to English.");
+        userLanguage = "en";
         wordInUserLanguage = wastesListPairs[0].text.split(","); //default: English;
       }
     }
@@ -106,20 +108,33 @@ async function getCountryLang() {
     console.log("Country code: " + ctyCode);
     const langRes = await fetch('https://restcountries.eu/rest/v2/alpha/' + ctyCode);
     let resp = await langRes.json();
-    let lang = resp.languages[0].iso639_1;
-    console.log("Language code: " + lang);
+    sencondLanguage = resp.languages[0].iso639_1;
+
+    if (sencondLanguage == userLanguage) {
+      if (userLanguage == "en" || userLanguage == "zh-cn") {
+        sencondLanguage = "zh-tw";
+      } else {
+        sencondLanguage = "en";
+      }
+    }
+    console.log("Language code: " + sencondLanguage);
+
     for (let i = 0; i < wastesListPairs.length; i++) {
-      if (lang.toLowerCase() == wastesListPairs[i].symbol) {
+      if (sencondLanguage.toLowerCase() == wastesListPairs[i].symbol) {
         wordIncountryLanguage = wastesListPairs[i].text.split(",");
         break;
       }
     }
+    if (sencondLanguage.toLowerCase() == "th" || sencondLanguage.toLowerCase() == "ru" || sencondLanguage.toLowerCase() == "vi" ||
+      sencondLanguage.toLowerCase() == "ko" || userLanguage.toLowerCase() == "th" || userLanguage.toLowerCase() == "ru" || userLanguage.toLowerCase() == "vi" ||
+      userLanguage.toLowerCase() == "ko") {
+      firstFont = "Courier New";
+    }
+
     localizedWords = wordInUserLanguage.concat(wordIncountryLanguage);
-    console.log(localizedWords);
   } catch (err) {
     console.log('Error -> ', err);
-    wordIncountryLanguage = wordInUserLanguage;
-    localizedWords = wordInUserLanguage;
-
+    sencondLanguage = "ch-tw";
+    wordIncountryLanguage = wastesListPairs[1].text.split(","); //default: ch-tw;
   }
 }

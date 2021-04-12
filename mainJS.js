@@ -11,13 +11,14 @@ let wordInUserLanguage = [];
 let wordIncountryLanguage = [];
 let localizedWords = [];
 var wastesListPairs = [];
-let canvasW;
-let canvasH = 3200;
+let canvasW = 1792;
+let canvasH = 3500;
 
 let firstFont = "New Tegomin";
 let lastSentence = 0;
 let waveSound;
 let headLine;
+let startSound = false;
 
 function preload() {
   loadjson();
@@ -27,7 +28,9 @@ function preload() {
 
 function setup() {
   frameRate(30);
-  canvasW = windowWidth;
+  if (windowWidth >= 1700 && windowWidth <= 2000) {
+    canvasW = windowWidth;
+  }
   createCanvas(canvasW, canvasH);
   leftMargin = width / 4;
   textFont(firstFont);
@@ -36,10 +39,9 @@ function setup() {
 
   waveSound.amp(0.4);
   lineHeight = 1.7 * (textAscent() + textDescent());
-
-  loadSentences();
   loadHeading("Listen to the sound of the sea");
-  generateNewText();
+  loadSentences();
+  generateNewText(sentences[crtSentenceIndex]);
 }
 
 function loadHeading(t) {
@@ -50,8 +52,14 @@ function loadHeading(t) {
 
 function mouseClicked() {
   words = [];
+  if (!startSound) {
+    startSound = true;
+    waveSound.loop();
+    loadHeading("Stop listening");
+  }
   if (headLine.mouseInsideText()) {
     if (!waveSound.isPlaying()) {
+      startSound = true;
       waveSound.loop();
       loadHeading("Stop listening");
     } else {
@@ -60,18 +68,51 @@ function mouseClicked() {
     }
   }
 
-  if (crtSentenceIndex < sentences.length) {
+  if (crtSentenceIndex < sentences.length - 1) {
     for (let i = 0; i < elements.length; i++) {
       if (elements[i].mouseInsideText() && elements[i].clickable) {
-        if ((crtSentenceIndex == sentences.length - 2) && (elements[i].word == "and" || elements[i].word == "everything")) {
-          crtSentenceIndex++;
-        }
-        elements.forEach((item) => {
-          item.clickable = false;
-        });
 
+        if (elements[i].word == "and" || elements[i].word == "everything") {
+          crtSentenceIndex += 2;
+            for (let j = 0; j < elements.length; j++) {
+              elements[j].clickable = false;
+            }
+            generateNewText(sentences[crtSentenceIndex]);
+
+        } else if (elements[i].word == "fading" || elements[i].word == "away") {
+          crtSentenceIndex++;
+          generateNewText(sentences[crtSentenceIndex]);
+          for (let j = 0; j < elements.length; j++) {
+            elements[j].clickable = false;
+          }
+        } else {
+          if (elements[i].word == "memories") {
+            generateNewText(inserts[0]);
+          } else if (elements[i].word == "responding") {
+            generateNewText(inserts[1]);
+          }else if (elements[i].word == "lockdown") {
+            generateNewText(inserts[2]);
+          } else if (elements[i].word == "weightlessness") {
+            generateNewText(inserts[3]);
+          } else if (elements[i].word == "creature" || elements[i].word == "choke") {
+            generateNewText(inserts[4]);
+          } else {
+            crtSentenceIndex++;
+            generateNewText(sentences[crtSentenceIndex]);
+          }
+
+          let k = 0;
+          while (elements[i - k].clickable && i - k > 0) {
+            elements[i - k].clickable = false;
+            k++;
+          }
+          k = 1;
+          while (elements[i + k].clickable && i + k < elements.length) {
+            elements[i + k].clickable = false;
+            k++;
+          }
+        }
         elements[i].isTouched = false;
-        generateNewText();
       }
     }
   } else {
@@ -91,9 +132,8 @@ function restart() {
   let newArr = elements.filter(item => (item.isTouched == true && item.isPoem == false));
   elements = newArr;
   scrollWindow();
-  generateNewText();
+  generateNewText(sentences[crtSentenceIndex]);
 }
-
 
 function draw() {
   clear();

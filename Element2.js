@@ -12,8 +12,13 @@ class Element {
     this.crtAngle = 0;
     this.sz = 19;
     //-----------------------------------
-    this.weight = map(this.word.length, 1, 15, 1, 5);
-    this.weight = constrain(this.weight, 1, 5);
+    if (RiTa.isPunct(this.word)) {
+      this.weight = random(15, 45);
+    } else {
+      this.weight = map(this.word.length, 1, 15, 1, 5);
+      this.weight = constrain(this.weight, 1, 5);
+
+    }
     this.isTouched = false;
     this.switch = false;
     this.speed = createVector(0, 0);
@@ -28,7 +33,6 @@ class Element {
       this.solidSpeed = random(2, 5);
     }
     this.lineTrans = 100;
-
     this.crtLife = 0;
     this.maxLife = RiTa.isPunct(this.word) ? random(200, 600) : random(2500, 3500);
   }
@@ -36,16 +40,15 @@ class Element {
   //-----------------------------------
   applyForce(force) {
     this.acc.add(force);
-    if (RiTa.isPunct(this.word) || this.word == "o") {
-      this.speed.y -= 1 / 10;
-
+    if (RiTa.isPunct(this.word)) {
+      this.pos.y -= 17 /this.weight;
     } else {
       this.speed.y += this.weight / random(100, 300);
       this.speed.add(this.acc.div(this.weight));
+      this.speed.limit(maxSpeed);
+      this.pos.add(this.speed);
 
     }
-    this.speed.limit(maxSpeed);
-    this.pos.add(this.speed);
   }
 
   newWord() {
@@ -54,7 +57,7 @@ class Element {
       this.sz = random(13, 23);
     } else {
       this.word = "。";
-      this.sz = random(19, 40);
+      this.sz = this.weight;
     }
   }
 
