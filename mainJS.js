@@ -22,6 +22,7 @@ let startSound = false;
 
 function preload() {
   loadjson();
+   localizedWords=["Takeaway", "Packaging", "Plastic", "Disposable", "Utensils", "Masks", "During", "The epidemic", "What You Neglect", "Everything","Will be", "Buried in", "Plastic", "Suffocated", "To death"]
   getCountryLang();
   waveSound = loadSound('wave.mp3');
 }

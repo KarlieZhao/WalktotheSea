@@ -95,7 +95,7 @@ async function loadjson() {
 }
 
 async function getCountryLang() {
-  try {
+  // try {
     const ipresponse = await fetch('https://api.ipify.org/?format=json');
     let response = await ipresponse.json();
     let ip = response.ip;
@@ -132,9 +132,10 @@ async function getCountryLang() {
     }
 
     localizedWords = wordInUserLanguage.concat(wordIncountryLanguage);
-  } catch (err) {
-    console.log('Error -> ', err);
-    sencondLanguage = "ch-tw";
-    wordIncountryLanguage = wastesListPairs[1].text.split(","); //default: ch-tw;
-  }
+    console.log(localizedWords);
+  // } catch (err) {
+  //   console.log('Error -> ', err);
+  //   sencondLanguage = "ch-tw";
+  //   wordIncountryLanguage = wastesListPairs[1].text.split(","); //default: ch-tw;
+  // }
 }
